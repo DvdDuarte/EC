@@ -1,0 +1,159 @@
+import hashlib
+import secrets
+
+class TwistedEdwardsCurve:
+    # Implementação da curva "Twisted Edwards"
+    # ...
+
+class EdCDSA:
+    def __init__(self, curve, private_key):
+        self.curve = curve
+        self.private_key = private_key
+        self.public_key = private_key * curve.generator
+
+    def sign(self, message):
+        # Gera um número aleatório k
+        k = secrets.randbelow(self.curve.order)
+
+        # Calcula o ponto R = k * G
+        R = k * self.curve.generator
+
+        # Calcula o valor s = (H(m) + d * r) / k
+        hash_message = int.from_bytes(hashlib.sha256(message.encode()).digest(), "big")
+        r = R.x
+        s = (hash_message + self.private_key * r) * pow(k, -1, self.curve.order) % self.curve.order
+
+        # Retorna a assinatura (R, s)
+        return (R, s)
+
+    def verify(self, message, signature):
+        R, s = signature
+
+        # Verifica se o ponto R está na curva "Twisted Edwards"
+        if not self.curve.is_on_curve(R):
+            return False
+
+        # Calcula o valor v = H(m) * B / s - r * B / s
+        hash_message = int.from_bytes(hashlib.sha256(message.encode()).digest(), "big")
+        r = R.x
+        v = (hash_message * self.curve.generator + (-r) * self.public_key) * pow(s, -1, self.curve.order)
+
+        # Verifica se v * G = R - H(m) * A / s
+        if v * self.curve.generator == R - hash_message * self.public_key * pow(s, -1, self.curve.order):
+            return True
+        else:
+            return False
+
+    @staticmethod
+    def fiat_shamir(challenge, secret):
+        # Transformação de Fiat-Shamir
+        hash_challenge = int.from_bytes(hashlib.sha256(challenge).digest(), "big")
+        return EdCDSA(None, secret).sign(hash_challenge.to_bytes((hash_challenge.bit_length() + 7) // 8, "big"))
+
+# Exemplo de uso
+curve = TwistedEdwardsCurve.edwards25519()
+private_key = secrets.randbelow(curve.order)
+edcdsa = EdCDSA(curve, private_key)
+
+# Protocolo de autenticação de desafio-resposta usando a transformação de Fiat-Shamir
+# Signatário envia sua chave pública
+public_key = edcdsa.public_key
+
+# Verificador envia um desafio aleatório
+challenge = secrets.token_bytes(32)
+
+# Signatário calcula a resposta assinando o desafio usando o EdCDSA e envia a resposta para o verificador
+response = EdCDSA.fiat_shamir(challenge, private_key)
+
+# Verificador verifica a resposta usando a chave pública do signatário e o protocolo de verificação de assinatura do EdCDSA
+if edcdsa.verify(challenge, response):
+    print("Autenticado com sucesso!")
+else:
+    print("Falha na autenticação.")
+
+
+
+--------------------------
+
+class TwistedEdwardsCurve:
+    # Parâmetros da curva edwards25519
+    p = 2**255 - 19
+    d = -121665 * pow(121666, -1, p)
+    q = (p + 1) // 4
+    generator_x = 15112221349535400772501151409588531511454012693041857206046113283949847762202
+    generator_y = 46316835694926478169428394003475163141307993866256225615783033603165251855960
+
+    @staticmethod
+    def edwards25519():
+        return TwistedEdwardsCurve(TwistedEdwardsCurve.p, TwistedEdwardsCurve.d, TwistedEdwardsCurve.q,
+                                   TwistedEdwardsCurve.generator_x, TwistedEdwardsCurve.generator_y)
+
+    def __init__(self, p, d, q, generator_x, generator_y):
+        self.p = p
+        self.d = d
+        self.q = q
+        self.generator = Point(self, generator_x, generator_y)
+
+    def is_on_curve(self, point):
+        # Verifica se o ponto está na curva edwards25519
+        x, y = point.x, point.y
+        return (pow(x, 2, self.p) + pow(y, 2, self.p) - 1 - self.d * pow(x, 2, self.p) * pow(y, 2, self.p)) % self.p == 0
+
+class Point:
+    # Implementação de ponto em uma curva "Twisted Edwards"
+    # ...
+
+    def __rmul__(self, other):
+        # Multiplicação de ponto por um escalar
+        # ...
+
+
+-----------------------------
+
+
+class Point:
+    # Implementação de ponto em uma curva "Twisted Edwards"
+
+    def __init__(self, curve, x, y):
+        self.curve = curve
+        self.x = x % curve.p
+        self.y = y % curve.p
+        if not curve.is_on_curve(self):
+            raise ValueError("O ponto não está na curva!")
+
+    def __add__(self, other):
+        # Adição de dois pontos
+        if self.curve != other.curve:
+            raise ValueError("Os pontos não pertencem à mesma curva!")
+        x1, y1 = self.x, self.y
+        x2, y2 = other.x, other.y
+        p = self.curve.p
+        d = self.curve.d
+        x3 = ((x1*y2 + y1*x2) * pow(1 + d*x1*x2*y1*y2, -1, p)) % p
+        y3 = ((y1*y2 - x1*x2) * pow(1 - d*x1*x2*y1*y2, -1, p)) % p
+        return Point(self.curve, x3, y3)
+
+    def __mul__(self, scalar):
+        # Multiplicação de ponto por um escalar
+        if not isinstance(scalar, int):
+            raise TypeError("O escalar deve ser um inteiro!")
+        if scalar == 0:
+            return Point(self.curve, 0, 1)
+        if scalar == 1:
+            return self
+        if scalar < 0 or scalar >= self.curve.q:
+            return scalar * self.neg()
+        if scalar % 2 == 0:
+            return (self + self) * (scalar // 2)
+        else:
+            return self + self * (scalar - 1)
+
+    def __rmul__(self, scalar):
+        return self * scalar
+
+    def neg(self):
+        # Retorna o negativo do ponto
+        return Point(self.curve, self.x, -self.y % self.curve.p)
+
+    def __str__(self):
+        return f"({self.x}, {self.y})"
