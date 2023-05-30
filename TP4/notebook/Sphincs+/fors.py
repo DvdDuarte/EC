@@ -2,12 +2,36 @@ from sphincs_aux import *
 
 # FORS  few-time signature scheme
 
+# Este código implementa a classe Fors (Few-Time Signature Scheme), que é um esquema de assinatura 
+# criptográfica baseado em árvores de Merkle chamadas de FORS (Few-time Signature Scheme).
+
+
+# A classe Fors possui estes métodos:
+
+#     "auths_from_sig_fors" recebe uma assinatura sig e retorna uma lista com as autenticações 
+# correspondentes.
+
+#     "fors_sk_gen" gera a chave secreta (secret key) para uma árvore FORS específica, com base em 
+# uma seed secreta, um endereço ADRS e um índice.
+
+#     "fors_treehash" calcula o nó raiz de uma árvore FORS, com base em uma seed secreta, um 
+# índice inicial, uma altura alvo, uma seed pública e um endereço ADRS.
+
+#     "fors_pk_gen" gera a chave pública (public key) para o esquema FORS, com base em uma seed 
+# secreta, uma seed pública e um endereço ADRS.
+
+#     "fors_sign" assina uma mensagem usando o esquema FORS, com base em uma mensagem, uma seed 
+# secreta, uma seed pública e um endereço ADRS.
+
+#     "fors_pk_from_sig" verifica a assinatura e recupera a chave pública correspondente, com base 
+# em uma assinatura sig, uma mensagem, uma seed pública e um endereço ADRS.
+
 class Fors:
     def __init__(self):
         
-        self._n = 16
-        self._k = 10
-        self._a = 15
+        self._n = 16 # tamanho em bytes do nó da árvore
+        self._k = 10 # número de árvores FORS
+        self._a = 15 # 
         self._t = 2 ** self._a
 
     def auths_from_sig_fors(self, sig):

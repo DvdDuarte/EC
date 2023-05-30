@@ -6,19 +6,6 @@ from wots import Wots
 # XMSS - Extended Merkle Signature Scheme
 
 
-# A classe Xmss implementa o esquema XMSS. Ele contém métodos para geração de 
-# chave (xmss_pk_gen), assinatura (xmss_sign) e recuperação de chave pública de uma 
-# assinatura (xmss_pk_from_sig). Também inclui métodos para converter entre diferentes 
-# formatos de assinatura (sig_wots_from_sig_xmss, auth_from_sig_xmss, sigs_xmss_from_sig_hypertree).
-
-# O método hypertree_pk_gen gera a chave pública para o esquema HYPERTREE XMSS.
-
-# O método hypertree_sign gera uma assinatura para uma determinada mensagem usando o 
-# esquema HYPERTREE XMSS.
-
-# O método hypertree_verify verifica a autenticidade de uma assinatura para uma determinada 
-# mensagem usando o esquema HYPERTREE XMSS.
-
 class Xmss:
 
     def __init__(self):
