@@ -1,5 +1,5 @@
 import math
-from sphincs_aux import *
+from ADRS import *
 from wots import Wots
 
 

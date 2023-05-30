@@ -1,4 +1,4 @@
-from sphincs_aux import *
+from ADRS import *
 
 # WOTS⁺
 # O Sphincs+ utiliza um One-Time Signature (OTS),

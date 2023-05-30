@@ -1,4 +1,4 @@
-from sphincs_aux import *
+from ADRS import *
 
 # FORS  few-time signature scheme
 
