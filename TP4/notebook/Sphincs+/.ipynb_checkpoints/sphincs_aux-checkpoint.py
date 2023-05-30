@@ -6,19 +6,7 @@ import hashlib
 """
 Class ADRS, armazena os endereços do sphincs
 """
-# A classe ADRS armazena endereços usados no contexto do esquema de assinatura SPHINCS 
-# (Sphincs - Signature Scheme). A classe possui vários métodos para configurar e obter os diferentes 
-# campos do endereço.
 
-# Além disso, o código inclui algumas funções de hash e criptografia relacionadas. A função 
-# "hash_" é usada para calcular um hash com base em uma seed, um endereço ADRS, e um valor 
-# de entrada. A função "prf" é usada para gerar uma chave pseudorrandômica com base em uma seed 
-# secreta e um endereço ADRS. A função "hash_msg" é usada para comprimir uma mensagem a ser 
-# assinada usando a função de hash SHA256. A função "prf_msg" é usada para gerar aleatoriedade 
-# para a compressão da mensagem.
-
-# Por fim, a função "base_w" converte uma string em um array de inteiros baseado em um determinado 
-# valor de w (base).
 
 class ADRS:
     # TYPES

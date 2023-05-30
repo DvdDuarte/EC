@@ -4,22 +4,6 @@ from sphincs_aux import *
 # O Sphincs+ utiliza um One-Time Signature (OTS),
 # onde cada par de chaves pode ser utilizado para assinar uma única mensagem.
 
-# A classe Wots possui estes métodos:
-
-#     "chain" recebe uma entrada x, um índice i, um número de passos s, uma semente pública e 
-# um endereço ADRS, e retorna o valor de F iterado s vezes em x.
-
-#     "wots_sk_gen" gera a chave privada (secret key) para o esquema WOTS+, com base em uma seed 
-# secreta e um endereço ADRS.
-
-#     "wots_pk_gen" gera a chave pública (public key) para o esquema WOTS+, com base em uma seed 
-# secreta, uma seed pública e um endereço ADRS.
-
-#     "wots_sign" assina uma mensagem usando o esquema WOTS+, com base em uma mensagem, uma seed 
-# secreta, uma seed pública e um endereço ADRS.
-
-#     "wots_pk_from_sig" verifica a assinatura e recupera a chave pública correspondente, com base 
-# em uma assinatura sig, uma mensagem, uma seed pública e um endereço ADRS.
 
 class Wots:
     def __init__(self):
